@@ -25,6 +25,8 @@ import java.util.Random;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.nio.charset.Charset;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 class WebServer {
   public static void main(String args[]) {
@@ -200,23 +202,26 @@ class WebServer {
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
           // extract path parameters
           query_pairs = splitQuery(request.replace("multiply?", ""));
-
+try{
           // extract required fields from parameters
-          Integer num1 = Integer.parseInt(query_pairs.get("num1"));
-          Integer num2 = Integer.parseInt(query_pairs.get("num2"));
+              Integer num1 = Integer.parseInt(query_pairs.get("num1"));
+              Integer num2 = Integer.parseInt(query_pairs.get("num2"));
+
 
           // do math
-          Integer result = num1 * num2;
-
+          Integer result = num1 * num2;          
           // Generate response
           builder.append("HTTP/1.1 200 OK\n");
           builder.append("Content-Type: text/html; charset=utf-8\n");
           builder.append("\n");
           builder.append("Result is: " + result);
 
-          // TODO: Include error handling here with a correct error code and
-          // a response that makes sense
-
+         }catch(Exception ex){
+          builder.append("HTTP/1.1 400 BAD REQUEST\n");
+          builder.append("Content-Type: text/html; charset=utf-8\n");
+          builder.append("\n");
+          builder.append("Incorrect Parameter Entered");
+         }
         } else if (request.contains("github?")) {
           // pulls the query from the request and runs it with GitHub's REST API
           // check out https://docs.github.com/rest/reference/
@@ -229,9 +234,30 @@ class WebServer {
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
           query_pairs = splitQuery(request.replace("github?", ""));
           String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
-          System.out.println(json);
+          // System.out.println(json);
 
-          builder.append("Check the todos mentioned in the Java source file");
+	  builder.append("HTTP/1.1 200 OK\n");
+          builder.append("Content-Type: text/html; charset=utf-8\n");
+          builder.append("\n");
+
+          JSONArray jarray = new JSONArray(json);
+          //create a json of the string
+          String gitName;
+          String gitLogin;
+          String gitId;
+          builder.append("<html>");
+          for(int i=0; i<jarray.length(); i++){
+          builder.append("<span>");
+          JSONObject jarrayObject = jarray.getJSONObject(i);
+          gitName = jarrayObject.get("name").toString(); 
+          gitLogin = jarrayObject.getJSONObject("owner").get("login").toString();
+          gitId = jarrayObject.getJSONObject("owner").get("id").toString();
+          builder.append(gitLogin +", "+gitId +" -> "+gitName);          	 
+          builder.append("</span><br>");
+ }
+
+          builder.append("</html>");
+
           // TODO: Parse the JSON returned by your fetch and create an appropriate
           // response
           // and list the owner name, owner id and name of the public repo on your webpage, e.g.

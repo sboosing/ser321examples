@@ -1,5 +1,15 @@
+
 // set as java application
 apply plugin: 'application'
+
+repositories{
+mavenCentral()
+}
+
+dependencies{
+compile group: 'org.json', name: 'json', version: '20201115'
+}
+
 
 //define main class
 mainClassName = 'SimpleServer'
@@ -22,6 +32,7 @@ task FunWebServer(type: JavaExec) {
 
   main = 'funHttpServer.WebServer'
   standardInput = System.in
+
 }
 
 
