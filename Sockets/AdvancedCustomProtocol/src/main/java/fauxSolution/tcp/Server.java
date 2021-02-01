@@ -39,7 +39,8 @@ public class Server {
     json.put("datatype", 1);
     json.put("type", "quote");
     json.put("data",
-        "A good programmer is someone who always looks both ways before crossing a one-way street. (Doug Linder)");
+        "A good programmer is someone who always
+        looks both ways before crossing a one-way street. (Doug Linder)");
     return json;
   }
 
